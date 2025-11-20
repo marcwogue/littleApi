@@ -104,7 +104,7 @@ class ClearCartView(APIView):
         deleted_count, _ = CartItem.objects.filter(user=user).delete()
 
         return Response(
-            {"message": f"{deleted_count} items supprimés"},
+            {"message": f"{deleted_count} items supprimés avec succès"},
             status=status.HTTP_200_OK
         )
 
