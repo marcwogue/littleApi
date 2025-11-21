@@ -119,11 +119,11 @@ class OrderViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         # Client → voir seulement ses commandes
-        if user.groups.filter(name="Client").exists():
+        if user.groups.filter(name="client").exists():
             return Order.objects.filter(user=user)
 
         # Delivery → voir seulement commandes assignées à son équipe
-        if user.groups.filter(name="Delivery").exists():
+        if user.groups.filter(name="livreur").exists():
             return Order.objects.filter(delivery_team=user)
 
         # Manager/Admin → tout voir
@@ -133,7 +133,39 @@ class OrderViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         # Delivery team ne peut changer que le statut
-        if user.groups.filter(name="Delivery").exists():
+        if user.groups.filter(name="livreur").exists():
             serializer.save(status=serializer.validated_data.get("status"))
         else:
             serializer.save()
+
+
+class GroupsManagerViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.filter(groups__name="manager")
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated, custompermissions.IsManager]
+
+    def destroy(self, request, *args, **kwargs):
+        user = User.objects.get(id=kwargs["pk"])
+        if user.groups.filter(name="manager").exists():
+            return super().destroy(request, *args, **kwargs)
+        return Response(
+            {"message": "l'utilisateur que vous essayez de supprimer n'est pas un manager . verifiez votre url"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+class GroupsDeliveryViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.filter(groups__name="livreur")
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated, custompermissions.IsManager]
+
+    def destroy(self, request, *args, **kwargs):
+        user = User.objects.get(id=kwargs["pk"])
+        if user.groups.filter(name="livreur").exists():
+            return super().destroy(request, *args, **kwargs)
+        return Response(
+            {"message": "l'utilisateur que vous essayez de supprimer n'est pas un livreur . verifiez votre url"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+
+

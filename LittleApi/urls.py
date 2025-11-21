@@ -1,12 +1,15 @@
 
 
 from django.urls import include, path
-from .views import  CartItemView, ClearCartView, MenuItemModView, MenuItemView, UserMeView, UserModView, UserView,LoginView
+from .views import  CartItemView, ClearCartView, GroupsDeliveryViewSet, GroupsManagerViewSet, MenuItemModView, MenuItemView, UserMeView, UserModView, UserView,LoginView
 from rest_framework.routers import SimpleRouter
 from .views import OrderViewSet
 
 router = SimpleRouter()
 router.register('orders', OrderViewSet)
+router.register('groups/manager/users', GroupsManagerViewSet, basename="manager")
+router.register('groups/delivery/users', GroupsDeliveryViewSet, basename="delivery")
+
 
 urlpatterns = [
     
