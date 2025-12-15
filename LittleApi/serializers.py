@@ -45,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
         read_only=False,
         write_only=False,
     )
-    class Meta:
+    class Meta: 
         model = User
         fields =   ('groups','username','email','password')
 
